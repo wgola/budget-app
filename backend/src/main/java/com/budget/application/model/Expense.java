@@ -19,11 +19,11 @@ import jakarta.persistence.Table;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private LocalDateTime creationDate;
 
-    private double value;
+    private Double value;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "expenses_tags", joinColumns = {
