@@ -1,6 +1,6 @@
 package com.budget.application.model;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ExpensesSearchCriteria {
