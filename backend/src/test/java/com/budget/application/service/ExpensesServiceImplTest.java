@@ -1,11 +1,14 @@
 package com.budget.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +45,7 @@ public class ExpensesServiceImplTest {
         this.testExpense = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 10, 1, 0, 0));
 
         Mockito.when(this.expenseRepository.save(Mockito.any(Expense.class))).thenReturn(this.testExpense);
+        Mockito.when(this.expenseRepository.findAll()).thenReturn(this.generatedExpenses);
     }
 
     @Test
@@ -54,7 +58,12 @@ public class ExpensesServiceImplTest {
 
     @Test
     void testDeleteExpense() {
+        Expense expenseToDelete = this.expenseRepository.findAll().get(0);
 
+        this.expensesService.deleteExpense(expenseToDelete.getId());
+        Optional<Expense> deletedExpense = this.expenseRepository.findById(expenseToDelete.getId());
+
+        assertTrue(deletedExpense.isEmpty());
     }
 
     @Test
