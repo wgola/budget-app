@@ -68,7 +68,9 @@ public class ExpensesServiceImplTest {
 
     @Test
     void testGetAllExpenses() {
+        Optional<List<Expense>> allExpenses = this.expensesService.getAllExpenses();
 
+        assertEquals(allExpenses.get().size(), this.generatedExpenses.size());
     }
 
     @Test
