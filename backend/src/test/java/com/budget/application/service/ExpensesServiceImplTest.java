@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -111,8 +110,24 @@ public class ExpensesServiceImplTest {
     }
 
     @Test
-    void testGetExpensesByCriteriaWtihBothDatesSettedOnly() {
+    void testGetExpensesByCriteriaWtihBothDatesSetted() {
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
+        expensesSearchCriteria.setFromDate(this.fromDate);
+        expensesSearchCriteria.setToDate(this.toDate);
+
+        Optional<List<Expense>> foundExpenses = this.expensesService
+                .getExpensesBySearchCriteria(expensesSearchCriteria);
+
+        assertTrue(foundExpenses.get().size() > 0);
+    }
+
+    @Test
+    void testGetExpensesByCriteriaWtihAllParamsSetted() {
+        List<String> tagNames = this.generatedExpenses.get(0).getTags().stream().map(Tag::getName)
+                .collect(Collectors.toList());
+
+        ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
+        expensesSearchCriteria.setTagNames(tagNames);
         expensesSearchCriteria.setFromDate(this.fromDate);
         expensesSearchCriteria.setToDate(this.toDate);
 
