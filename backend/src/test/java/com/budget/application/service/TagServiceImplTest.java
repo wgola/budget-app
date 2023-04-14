@@ -29,16 +29,13 @@ public class TagServiceImplTest {
     @Mock
     private TagRepository tagRepository;
 
-    private TestUtils testUtils;
-
     private List<Tag> allGeneratedTestTags;
 
     private String newTagName;
 
     @BeforeEach
     void setUp() throws Exception {
-        this.testUtils = new TestUtils();
-        this.allGeneratedTestTags = this.testUtils.generateTestTags(10);
+        this.allGeneratedTestTags = TestUtils.generateTestTags(10);
 
         Tag generatedTag = this.allGeneratedTestTags.get(0);
         this.newTagName = generatedTag.getName();

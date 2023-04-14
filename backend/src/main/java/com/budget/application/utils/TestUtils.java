@@ -20,7 +20,7 @@ import com.budget.application.model.Tag;
 
 public class TestUtils {
 
-	public String getRequestParamStringFromArray(String paramName, List<String> paramValues) {
+	public static String getRequestParamStringFromArray(String paramName, List<String> paramValues) {
 		StringBuilder sb = new StringBuilder();
 
 		for (String value : paramValues) {
@@ -33,7 +33,7 @@ public class TestUtils {
 		return result;
 	}
 
-	public String getRandomTextFromUUID() {
+	public static String getRandomTextFromUUID() {
 		return UUID.randomUUID().toString().replace("-", "").substring(0, 5);
 	}
 
@@ -42,45 +42,46 @@ public class TestUtils {
 	// Stream.of(args)).collect(Collectors.toList());
 	// }
 
-	public byte[] getBytesArrayFromJSON(JSONObject object) {
+	public static byte[] getBytesArrayFromJSON(JSONObject object) {
 		return object.toString().getBytes();
 	}
 
-	public Expense generateTestExpense(int amountOfTagsToGenerate, LocalDateTime expenseDate) {
+	public static Expense generateTestExpense(int amountOfTagsToGenerate, LocalDateTime expenseDate) {
 		Expense expense = new Expense();
 
 		expense.setCreationDate(expenseDate != null ? expenseDate : LocalDateTime.now());
-		expense.setTags(this.generateTestTags(amountOfTagsToGenerate));
-		expense.setValue(this.getRandomDoubleFromGivenRange(0.0, 10000));
+		expense.setTags(TestUtils.generateTestTags(amountOfTagsToGenerate));
+		expense.setValue(TestUtils.getRandomDoubleFromGivenRange(0.0, 10000));
 
 		return expense;
 	}
 
-	public List<Tag> generateTestTags(int amountOfTagsToGenerate) {
+	public static List<Tag> generateTestTags(int amountOfTagsToGenerate) {
 		List<Tag> randomTags = new ArrayList<Tag>();
 		for (int i = 0; i < amountOfTagsToGenerate; i++) {
-			randomTags.add(new Tag(this.getRandomTextFromUUID()));
+			randomTags.add(new Tag(TestUtils.getRandomTextFromUUID()));
 		}
 
 		return randomTags;
 	}
 
-	public double getRandomDoubleFromGivenRange(double rangeMin, double rangeMax) {
+	public static double getRandomDoubleFromGivenRange(double rangeMin, double rangeMax) {
 		Random r = new Random();
 
 		return rangeMin + (rangeMax - rangeMin) * r.nextDouble();
 	}
 
-	public List<Expense> generateGivenAmounOfTestExpenseObjects(int amountOfExpenses, int amountOfTagsInEachExpense) {
+	public static List<Expense> generateGivenAmounOfTestExpenseObjects(int amountOfExpenses,
+			int amountOfTagsInEachExpense, LocalDateTime expenseDate) {
 		List<Expense> expenses = new ArrayList<Expense>();
 		for (int i = 0; i < amountOfExpenses; i++) {
-			expenses.add(generateTestExpense(amountOfTagsInEachExpense, LocalDateTime.now()));
+			expenses.add(TestUtils.generateTestExpense(amountOfTagsInEachExpense, expenseDate));
 		}
 
 		return expenses;
 	}
 
-	public Timestamp getDateFromGivenFormat(String dateInProperFormat, String format) throws ParseException {
+	public static Timestamp getDateFromGivenFormat(String dateInProperFormat, String format) throws ParseException {
 		DateFormat formatter = new SimpleDateFormat();
 		Date date = formatter.parse(dateInProperFormat);
 		Timestamp timestamp = new Timestamp(date.getTime());
@@ -88,19 +89,18 @@ public class TestUtils {
 		return timestamp;
 	}
 
-	public LocalDateTime getLocalDateTimeFromGivenFormat(String dateInProperFormat, String format) {
+	public static LocalDateTime getLocalDateTimeFromGivenFormat(String dateInProperFormat, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		LocalDateTime dateTime = LocalDateTime.parse(dateInProperFormat, formatter);
 
 		return dateTime;
 	}
 
-	public String getISOStringFromLocalDateTime(LocalDateTime localDateTime) {
+	public static String getISOStringFromLocalDateTime(LocalDateTime localDateTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("+yyyy-MM-dd'T'HH:mm:ss'Z'")
 				.withZone(ZoneId.of("UTC"));
 		String formattedLDT = localDateTime.format(formatter).replace("+", "");
 
 		return formattedLDT;
 	}
-
 }
