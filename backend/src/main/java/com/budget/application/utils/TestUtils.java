@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
@@ -39,9 +37,10 @@ public class TestUtils {
 		return UUID.randomUUID().toString().replace("-", "").substring(0, 5);
 	}
 
-	public <T> List<T> append(List<T> list, T... args) {
-		return Stream.concat(list.stream(), Stream.of(args)).collect(Collectors.toList());
-	}
+	// public <T> List<T> append(List<T> list, T... args) {
+	// return Stream.concat(list.stream(),
+	// Stream.of(args)).collect(Collectors.toList());
+	// }
 
 	public byte[] getBytesArrayFromJSON(JSONObject object) {
 		return object.toString().getBytes();
