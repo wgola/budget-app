@@ -1,7 +1,6 @@
 package com.budget.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,6 +8,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.budget.application.model.Expense;
+import com.budget.application.model.ExpensesSearchCriteria;
+import com.budget.application.model.Tag;
 import com.budget.application.repository.ExpenseRepository;
 import com.budget.application.utils.TestUtils;
 
@@ -38,7 +41,7 @@ public class ExpensesServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(1, 1,
+        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(10, 1,
                 LocalDateTime.of(2018, 11, 12, 1, 0, 0));
         this.fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
         this.toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
@@ -74,7 +77,14 @@ public class ExpensesServiceImplTest {
     }
 
     @Test
-    void testGetExpensesBySearchCriteria() {
+    void testGetExpensesByCriteriaWtihTagsSettedOnly() {
+        ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
+        Expense desiredExpense = this.generatedExpenses.get(0);
+        List<String> tagNames = desiredExpense.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        expensesSearchCriteria.setTagNames(tagNames);
 
+        Expense foundExpense = this.expensesService.getExpensesBySearchCriteria(expensesSearchCriteria).get().get(0);
+
+        assertEquals(foundExpense.getId(), desiredExpense.getId());
     }
 }
