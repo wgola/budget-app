@@ -109,4 +109,16 @@ public class ExpensesServiceImplTest {
 
         assertTrue(foundExpenses.get().size() > 0);
     }
+
+    @Test
+    void testGetExpensesByCriteriaWtihBothDatesSettedOnly() {
+        ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
+        expensesSearchCriteria.setFromDate(this.fromDate);
+        expensesSearchCriteria.setToDate(this.toDate);
+
+        Optional<List<Expense>> foundExpenses = this.expensesService
+                .getExpensesBySearchCriteria(expensesSearchCriteria);
+
+        assertTrue(foundExpenses.get().size() > 0);
+    }
 }
