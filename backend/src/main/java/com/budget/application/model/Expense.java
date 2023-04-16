@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "expenses")
 public class Expense {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "expense_id")
