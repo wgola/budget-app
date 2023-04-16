@@ -25,7 +25,7 @@ import com.budget.application.repository.ExpenseRepository;
 import com.budget.application.utils.TestUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-public class ExpensesServiceImplTest {
+class ExpensesServiceImplTest {
 
     @InjectMocks
     private ExpensesServiceImpl expensesService;
@@ -55,15 +55,15 @@ public class ExpensesServiceImplTest {
         Expense createdExpense = this.expensesService.createExpense(this.testExpense);
 
         assertNotNull(createdExpense);
-        assertEquals(createdExpense.getId(), this.testExpense.getId());
+        assertEquals(createdExpense.getExpenseID(), this.testExpense.getExpenseID());
     }
 
     @Test
     void testDeleteExpense() {
         Expense expenseToDelete = this.expenseRepository.findAll().get(0);
 
-        this.expensesService.deleteExpense(expenseToDelete.getId());
-        Optional<Expense> deletedExpense = this.expenseRepository.findById(expenseToDelete.getId());
+        this.expensesService.deleteExpense(expenseToDelete.getExpenseID());
+        Optional<Expense> deletedExpense = this.expenseRepository.findById(expenseToDelete.getExpenseID());
 
         assertTrue(deletedExpense.isEmpty());
     }
@@ -84,7 +84,7 @@ public class ExpensesServiceImplTest {
 
         Expense foundExpense = this.expensesService.getExpensesBySearchCriteria(expensesSearchCriteria).get().get(0);
 
-        assertEquals(foundExpense.getId(), desiredExpense.getId());
+        assertEquals(foundExpense.getExpenseID(), desiredExpense.getExpenseID());
     }
 
     @Test

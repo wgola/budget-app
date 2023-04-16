@@ -21,7 +21,7 @@ import com.budget.application.repository.TagRepository;
 import com.budget.application.utils.TestUtils;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
-public class TagServiceImplTest {
+class TagServiceImplTest {
 
     @InjectMocks
     private TagServiceImpl tagService;
@@ -34,7 +34,7 @@ public class TagServiceImplTest {
     private String newTagName;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         this.allGeneratedTestTags = TestUtils.generateTestTags(10);
 
         Tag generatedTag = this.allGeneratedTestTags.get(0);
@@ -57,8 +57,8 @@ public class TagServiceImplTest {
     void testDeleteTag() {
         Tag tagToDelete = this.tagService.getAllTags().get().get(0);
 
-        this.tagService.deleteTag(tagToDelete.getId());
-        Optional<Tag> deletedTag = this.tagRepository.findById(tagToDelete.getId());
+        this.tagService.deleteTag(tagToDelete.getTagID());
+        Optional<Tag> deletedTag = this.tagRepository.findById(tagToDelete.getTagID());
 
         assertTrue(deletedTag.isEmpty());
     }

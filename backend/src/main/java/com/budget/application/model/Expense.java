@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,31 +20,34 @@ import jakarta.persistence.Table;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name = "expense_id")
+    private Long expenseID;
 
+    @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
+    @Column(name = "`value`")
     private Double value;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, targetEntity = Tag.class)
     @JoinTable(name = "expenses_tags", joinColumns = {
-            @JoinColumn(name = "expense_id", referencedColumnName = "id", nullable = false, updatable = false) }, inverseJoinColumns = {
-                    @JoinColumn(name = "tag_id", referencedColumnName = "id", nullable = false, updatable = false) })
+            @JoinColumn(name = "expense_id", referencedColumnName = "expense_id", nullable = false, updatable = false) }, inverseJoinColumns = {
+                    @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", nullable = false, updatable = false) })
     private List<Tag> tags;
 
     public Expense() {
     }
 
-    public Long getId() {
-        return id;
+    public Long getExpenseID() {
+        return this.expenseID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setExpsenseID(Long expenseID) {
+        this.expenseID = expenseID;
     }
 
     public LocalDateTime getCreationDate() {
-        return creationDate;
+        return this.creationDate;
     }
 
     public void setCreationDate(LocalDateTime creationDate) {
@@ -51,7 +55,7 @@ public class Expense {
     }
 
     public Double getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(Double value) {
@@ -59,7 +63,7 @@ public class Expense {
     }
 
     public List<Tag> getTags() {
-        return tags;
+        return this.tags;
     }
 
     public void setTags(List<Tag> tags) {

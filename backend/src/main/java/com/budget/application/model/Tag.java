@@ -18,9 +18,10 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name = "tag_id")
+    private Long tagID;
 
-    @Column(unique = true, length = 30)
+    @Column(name = "name", unique = true, length = 30)
     private String name;
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
@@ -34,16 +35,16 @@ public class Tag {
     public Tag() {
     }
 
-    public Long getId() {
-        return id;
+    public Long getTagID() {
+        return this.tagID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTagID(Long tagID) {
+        this.tagID = tagID;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -51,7 +52,7 @@ public class Tag {
     }
 
     public List<Expense> getExpenses() {
-        return expenses;
+        return this.expenses;
     }
 
     public void setExpenses(List<Expense> expenses) {
