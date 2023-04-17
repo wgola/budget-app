@@ -40,9 +40,9 @@ class ExpensesServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(4, 1,
+        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(3, 1,
                 LocalDateTime.of(2018, 11, 12, 1, 0, 0));
-        this.testExpense = this.generatedExpenses.get(0);
+        this.testExpense = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 12, 1, 0, 0));
         this.fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
         this.toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
 

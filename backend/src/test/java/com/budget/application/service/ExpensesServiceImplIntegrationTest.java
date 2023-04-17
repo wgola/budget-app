@@ -1,6 +1,7 @@
 package com.budget.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +36,26 @@ public class ExpensesServiceImplIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        List<Expense> generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(3, 1,
+                LocalDateTime.of(2018, 11, 12, 1, 0, 0));
         this.testExpense = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 12, 1, 0, 0));
         this.fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
         this.toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
-        for (int i = 0; i < 10; i++) {
-            this.expensesService
-                    .createExpense(TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 12, 1, 0, 0)));
+        for (Expense expense : generatedExpenses) {
+            this.expensesService.createExpense(expense);
         }
+    }
+
+    @AfterEach
+    void tearDown() {
+        this.expenseRepository.deleteAll();
     }
 
     @Test
     void testCreateExpense() {
         Expense createdExpense = this.expensesService.createExpense(this.testExpense);
 
-        assertEquals(createdExpense.getExpenseID(), this.testExpense.getExpenseID());
+        assertEquals(this.testExpense.getExpenseID(), createdExpense.getExpenseID());
     }
 
     @Test
@@ -63,7 +71,7 @@ public class ExpensesServiceImplIntegrationTest {
     void testGetAllExpenses() {
         List<Expense> allExpenses = this.expensesService.getAllExpenses().get();
 
-        assertTrue(allExpenses.size() > 0);
+        assertEquals(3, allExpenses.size());
     }
 
     @Test
@@ -77,7 +85,7 @@ public class ExpensesServiceImplIntegrationTest {
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
-        assertTrue(expensesFoundByCriteria.get().size() > 0);
+        assertNotEquals(0, expensesFoundByCriteria.get().size());
     }
 
     @Test
@@ -89,7 +97,7 @@ public class ExpensesServiceImplIntegrationTest {
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
-        assertTrue(expensesFoundByCriteria.get().size() > 0);
+        assertNotEquals(0, expensesFoundByCriteria.get().size());
     }
 
     @Test
@@ -101,7 +109,7 @@ public class ExpensesServiceImplIntegrationTest {
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
-        assertTrue(expensesFoundByCriteria.get().size() > 0);
+        assertNotEquals(0, expensesFoundByCriteria.get().size());
     }
 
     @Test
@@ -114,7 +122,7 @@ public class ExpensesServiceImplIntegrationTest {
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
-        assertTrue(expensesFoundByCriteria.get().size() > 0);
+        assertNotEquals(0, expensesFoundByCriteria.get().size());
     }
 
     @Test
@@ -130,6 +138,6 @@ public class ExpensesServiceImplIntegrationTest {
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
-        assertTrue(expensesFoundByCriteria.get().size() > 0);
+        assertNotEquals(0, expensesFoundByCriteria.get().size());
     }
 }
