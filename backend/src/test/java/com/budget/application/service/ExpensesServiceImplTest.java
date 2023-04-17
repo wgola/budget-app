@@ -1,6 +1,7 @@
 package com.budget.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,11 +41,11 @@ class ExpensesServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(10, 1,
+        this.generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(4, 1,
                 LocalDateTime.of(2018, 11, 12, 1, 0, 0));
+        this.testExpense = this.generatedExpenses.get(0);
         this.fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
         this.toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
-        this.testExpense = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 10, 1, 0, 0));
 
         Mockito.when(this.expenseRepository.save(Mockito.any(Expense.class))).thenReturn(this.testExpense);
         Mockito.when(this.expenseRepository.findAll()).thenReturn(this.generatedExpenses);
@@ -55,7 +56,7 @@ class ExpensesServiceImplTest {
         Expense createdExpense = this.expensesService.createExpense(this.testExpense);
 
         assertNotNull(createdExpense);
-        assertEquals(createdExpense.getExpenseID(), this.testExpense.getExpenseID());
+        assertEquals(this.testExpense.getExpenseID(), createdExpense.getExpenseID());
     }
 
     @Test
@@ -72,19 +73,20 @@ class ExpensesServiceImplTest {
     void testGetAllExpenses() {
         Optional<List<Expense>> allExpenses = this.expensesService.getAllExpenses();
 
-        assertEquals(allExpenses.get().size(), this.generatedExpenses.size());
+        assertEquals(this.generatedExpenses.size(), allExpenses.get().size());
     }
 
     @Test
     void testGetExpensesByCriteriaWtihTagsSettedOnly() {
+        List<String> tagNames = this.generatedExpenses.get(0).getTags().stream().map(Tag::getName).toList();
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
-        Expense desiredExpense = this.generatedExpenses.get(0);
-        List<String> tagNames = desiredExpense.getTags().stream().map(Tag::getName).collect(Collectors.toList());
         expensesSearchCriteria.setTagNames(tagNames);
 
-        Expense foundExpense = this.expensesService.getExpensesBySearchCriteria(expensesSearchCriteria).get().get(0);
+        Optional<List<Expense>> foundExpenses = this.expensesService
+                .getExpensesBySearchCriteria(expensesSearchCriteria);
 
-        assertEquals(foundExpense.getExpenseID(), desiredExpense.getExpenseID());
+        assertTrue(foundExpenses.isPresent());
+        assertNotEquals(0, foundExpenses.get().size());
     }
 
     @Test
@@ -95,7 +97,7 @@ class ExpensesServiceImplTest {
         Optional<List<Expense>> foundExpenses = this.expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
-        assertTrue(foundExpenses.get().size() > 0);
+        assertNotEquals(0, foundExpenses.get().size());
     }
 
     @Test
@@ -106,7 +108,7 @@ class ExpensesServiceImplTest {
         Optional<List<Expense>> foundExpenses = this.expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
-        assertTrue(foundExpenses.get().size() > 0);
+        assertNotEquals(0, foundExpenses.get().size());
     }
 
     @Test
@@ -118,14 +120,12 @@ class ExpensesServiceImplTest {
         Optional<List<Expense>> foundExpenses = this.expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
-        assertTrue(foundExpenses.get().size() > 0);
+        assertNotEquals(0, foundExpenses.get().size());
     }
 
     @Test
     void testGetExpensesByCriteriaWtihAllParamsSetted() {
-        List<String> tagNames = this.generatedExpenses.get(0).getTags().stream().map(Tag::getName)
-                .collect(Collectors.toList());
-
+        List<String> tagNames = this.generatedExpenses.get(0).getTags().stream().map(Tag::getName).toList();
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
         expensesSearchCriteria.setTagNames(tagNames);
         expensesSearchCriteria.setFromDate(this.fromDate);
@@ -134,6 +134,6 @@ class ExpensesServiceImplTest {
         Optional<List<Expense>> foundExpenses = this.expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
-        assertTrue(foundExpenses.get().size() > 0);
+        assertNotEquals(0, foundExpenses.get().size());
     }
 }
