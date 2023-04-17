@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,14 @@ class TagServiceImplIntegrationTest {
     void setUp() {
         this.tagName = TestUtils.getRandomTextFromUUID();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             this.tagService.createTag(TestUtils.getRandomTextFromUUID());
         }
+    }
+
+    @AfterEach
+    void tearDown() {
+        this.tagRepository.deleteAll();
     }
 
     @Test
@@ -58,7 +64,7 @@ class TagServiceImplIntegrationTest {
     void testGetAllTags() {
         List<Tag> retrievedTags = this.tagService.getAllTags().get();
 
-        assertTrue(retrievedTags.size() > 0);
+        assertEquals(3, retrievedTags.size());
     }
 
     @Test
