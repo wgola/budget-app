@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.budget.application.model.Expense;
 
 @RestController
-public class BudgetController {
+public class ExpenseController {
 
     @PostMapping(value = "/expense")
     public Object addNewExpense(@RequestBody Expense expense) {
@@ -27,7 +27,7 @@ public class BudgetController {
         return null;
     }
 
-    @GetMapping(value = "/expenses")
+    @GetMapping(value = "/expense")
     public Object getAllExpenses() {
 
         return null;
@@ -36,24 +36,6 @@ public class BudgetController {
     @GetMapping(value = "/expense/criteria")
     public Object getExpensesBySearchCriteria(@RequestParam(value = "tagNames") List<String> tagNames,
             @RequestParam(value = "fromDate") String fromDate, @RequestParam(value = "toDate") String toDate) {
-
-        return null;
-    }
-
-    @GetMapping(value = "tags")
-    public Object getAllTags() {
-
-        return null;
-    }
-
-    @PostMapping(value = "tag")
-    public Object addNewTag(@RequestBody String name) {
-
-        return null;
-    }
-
-    @DeleteMapping(value = "tag/{tagID}")
-    public Object deleteTag(@PathVariable("tagID") Long tagID) {
 
         return null;
     }
