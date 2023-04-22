@@ -4,9 +4,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
-public class CommonTools {
+public interface CommonTools {
 
-    public static LocalDateTime getLocalDateTimeFromISODate(String ISODate) {
+    static LocalDateTime getLocalDateTimeFromISODate(String ISODate) {
         try {
             Timestamp timestampFromIsoDate = CommonTools.getTimestampFromISODate(ISODate);
             return timestampFromIsoDate.toLocalDateTime();
@@ -16,7 +16,7 @@ public class CommonTools {
         }
     }
 
-    public static Timestamp getTimestampFromISODate(String iSODate) {
+    static Timestamp getTimestampFromISODate(String iSODate) {
         try {
             ZonedDateTime date = ZonedDateTime.parse(iSODate);
             LocalDateTime localDateTime = date.toLocalDateTime();

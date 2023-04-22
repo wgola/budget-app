@@ -18,9 +18,9 @@ import org.json.JSONObject;
 import com.budget.application.model.Expense;
 import com.budget.application.model.Tag;
 
-public class TestUtils {
+public interface TestUtils {
 
-	public static String getRequestParamStringFromArray(String paramName, List<String> paramValues) {
+	static String getRequestParamStringFromArray(String paramName, List<String> paramValues) {
 		StringBuilder sb = new StringBuilder();
 
 		for (String value : paramValues) {
@@ -33,7 +33,7 @@ public class TestUtils {
 		return result;
 	}
 
-	public static String getRandomTextFromUUID() {
+	static String getRandomTextFromUUID() {
 		return UUID.randomUUID().toString().replace("-", "").substring(0, 5);
 	}
 
@@ -42,11 +42,11 @@ public class TestUtils {
 	// Stream.of(args)).collect(Collectors.toList());
 	// }
 
-	public static byte[] getBytesArrayFromJSON(JSONObject object) {
+	static byte[] getBytesArrayFromJSON(JSONObject object) {
 		return object.toString().getBytes();
 	}
 
-	public static Expense generateTestExpense(int amountOfTagsToGenerate, LocalDateTime expenseDate) {
+	static Expense generateTestExpense(int amountOfTagsToGenerate, LocalDateTime expenseDate) {
 		Expense expense = new Expense();
 
 		expense.setCreationDate(expenseDate != null ? expenseDate : LocalDateTime.now());
@@ -56,7 +56,7 @@ public class TestUtils {
 		return expense;
 	}
 
-	public static List<Tag> generateTestTags(int amountOfTagsToGenerate) {
+	static List<Tag> generateTestTags(int amountOfTagsToGenerate) {
 		List<Tag> randomTags = new ArrayList<Tag>();
 		for (int i = 0; i < amountOfTagsToGenerate; i++) {
 			randomTags.add(new Tag(TestUtils.getRandomTextFromUUID()));
@@ -65,13 +65,13 @@ public class TestUtils {
 		return randomTags;
 	}
 
-	public static double getRandomDoubleFromGivenRange(double rangeMin, double rangeMax) {
+	static double getRandomDoubleFromGivenRange(double rangeMin, double rangeMax) {
 		Random r = new Random();
 
 		return rangeMin + (rangeMax - rangeMin) * r.nextDouble();
 	}
 
-	public static List<Expense> generateGivenAmounOfTestExpenseObjects(int amountOfExpenses,
+	static List<Expense> generateGivenAmounOfTestExpenseObjects(int amountOfExpenses,
 			int amountOfTagsInEachExpense, LocalDateTime expenseDate) {
 		List<Expense> expenses = new ArrayList<Expense>();
 		for (int i = 0; i < amountOfExpenses; i++) {
@@ -81,7 +81,7 @@ public class TestUtils {
 		return expenses;
 	}
 
-	public static Timestamp getDateFromGivenFormat(String dateInProperFormat, String format) throws ParseException {
+	static Timestamp getDateFromGivenFormat(String dateInProperFormat, String format) throws ParseException {
 		DateFormat formatter = new SimpleDateFormat();
 		Date date = formatter.parse(dateInProperFormat);
 		Timestamp timestamp = new Timestamp(date.getTime());
@@ -89,14 +89,14 @@ public class TestUtils {
 		return timestamp;
 	}
 
-	public static LocalDateTime getLocalDateTimeFromGivenFormat(String dateInProperFormat, String format) {
+	static LocalDateTime getLocalDateTimeFromGivenFormat(String dateInProperFormat, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		LocalDateTime dateTime = LocalDateTime.parse(dateInProperFormat, formatter);
 
 		return dateTime;
 	}
 
-	public static String getISOStringFromLocalDateTime(LocalDateTime localDateTime) {
+	static String getISOStringFromLocalDateTime(LocalDateTime localDateTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("+yyyy-MM-dd'T'HH:mm:ss'Z'")
 				.withZone(ZoneId.of("UTC"));
 		String formattedLDT = localDateTime.format(formatter).replace("+", "");
