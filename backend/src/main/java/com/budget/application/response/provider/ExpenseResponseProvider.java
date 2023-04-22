@@ -37,7 +37,7 @@ public class ExpenseResponseProvider {
             Expense createdExpense = this.expensesService.createExpense(expense);
             ExpensesList body = new ExpensesList(Arrays.asList(createdExpense));
 
-            return new ResponseEntity<ExpensesList>(body, HttpStatus.OK);
+            return new ResponseEntity<ExpensesList>(body, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<ExpensesList>(new ExpensesList(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
