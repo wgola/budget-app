@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.json.JSONObject;
-
 import com.budget.application.model.Expense;
 import com.budget.application.model.Tag;
 
@@ -42,9 +40,9 @@ public interface TestUtils {
 	// Stream.of(args)).collect(Collectors.toList());
 	// }
 
-	static byte[] getBytesArrayFromJSON(JSONObject object) {
-		return object.toString().getBytes();
-	}
+	// static byte[] getBytesArrayFromJSON(JSONObject object) {
+	// return object.toString().getBytes();
+	// }
 
 	static Expense generateTestExpense(int amountOfTagsToGenerate, LocalDateTime expenseDate) {
 		Expense expense = new Expense();
