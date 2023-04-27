@@ -22,7 +22,7 @@ import com.budget.application.repository.ExpenseRepository;
 import com.budget.application.utils.TestUtils;
 
 @SpringBootTest
-public class ExpensesServiceImplIntegrationTest {
+class ExpensesServiceImplIntegrationTest {
 
     @Autowired
     private ExpensesService expensesService;

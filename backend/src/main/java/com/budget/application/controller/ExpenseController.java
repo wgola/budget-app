@@ -28,7 +28,7 @@ public class ExpenseController {
     }
 
     @DeleteMapping(value = "/expense/{expenseID}")
-    public ResponseEntity<ExpensesList> deleteExpense(@PathVariable("expenseID") Long expenseID) {
+    public ResponseEntity<ExpensesList> deleteExpense(@PathVariable Long expenseID) {
         return this.expenseResponseProvider.deleteExpense(expenseID);
     }
 
@@ -39,8 +39,8 @@ public class ExpenseController {
 
     @GetMapping(value = "/expense/criteria")
     public ResponseEntity<ExpensesList> getExpensesBySearchCriteria(
-            @RequestParam(value = "tagNames") List<String> tagNames,
-            @RequestParam(value = "fromDate") String fromDate, @RequestParam(value = "toDate") String toDate) {
+            @RequestParam List<String> tagNames,
+            @RequestParam String fromDate, @RequestParam String toDate) {
         return this.expenseResponseProvider.getExpensesBySearchCriteria(tagNames, fromDate, toDate);
     }
 }
