@@ -4,17 +4,56 @@
     <form [formGroup]="expenseForm" (ngSubmit)="submitExpense($event)">
       <p>
         <mat-form-field class="chip-list">
-          <mat-chip-listbox>
+          <mat-chip-grid #chipList aria-label="Tags selection">
             <mat-chip>TEST</mat-chip>
-          </mat-chip-listbox>
+          </mat-chip-grid>
           <input
             #tagsInput
             type="text"
             [formControl]="tagsControl"
             placeholder="Add maximum 5 tags"
+            [matAutocomplete]="auto"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)"
+            [disabled]="selectedTags.length >= 5"
+          />
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="selected($event)"
+          >
+            <mat-option> TEST MAT-OPTION </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field>
+          <input
+            matInput
+            #valueInput
+            formControlName="value"
+            type="number"
+            pattern="^\d*(\.\d{0,2})?$"
+            placeholder="Add expense value"
           />
         </mat-form-field>
       </p>
+      <div class="center">
+        <button mat-flat-button color="primary" type="button" mat-button>
+          Show expenses
+        </button>
+        <button
+          mat-flat-button
+          color="accent"
+          type="submit"
+          mat-button
+          (click)="addExpenseClickHandler()"
+          disabled="!selectedTags.length>0"
+        >
+          Add expense
+        </button>
+      </div>
     </form>
   </mat-card-content>
 </mat-card>
