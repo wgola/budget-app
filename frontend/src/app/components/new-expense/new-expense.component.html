@@ -1,0 +1,20 @@
+<mat-card>
+  <mat-card-title class="center">New Expense</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="expenseForm" (ngSubmit)="submitExpense($event)">
+      <p>
+        <mat-form-field class="chip-list">
+          <mat-chip-listbox>
+            <mat-chip>TEST</mat-chip>
+          </mat-chip-listbox>
+          <input
+            #tagsInput
+            type="text"
+            [formControl]="tagsControl"
+            placeholder="Add maximum 5 tags"
+          />
+        </mat-form-field>
+      </p>
+    </form>
+  </mat-card-content>
+</mat-card>
