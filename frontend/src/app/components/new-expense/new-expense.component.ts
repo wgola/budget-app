@@ -4,9 +4,13 @@ import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
 } from "@angular/material/autocomplete";
+import { MatChipInputEvent } from "@angular/material/chips";
+import { MatDialog } from "@angular/material/dialog";
 import { Observable, map } from "rxjs";
 import { Tag } from "src/app/models/Tag";
+import { ExpenseService } from "src/app/services/expense/expense.service";
 import { TagService } from "src/app/services/tag/tag.service";
+import { AddedExpenseModalComponent } from "./added-expense-modal/added-expense-modal.component";
 
 @Component({
   selector: "app-new-expense",
@@ -24,13 +28,14 @@ export class NewExpenseComponent implements OnInit {
   public selectedTags: Tag[] = [];
   public allTags: Tag[] = [];
   public filteredTags: Observable<Tag[]>;
+  public removableChip: boolean = true;
 
   public expenseForm = new FormGroup({
-    tags: new FormControl({
-      value: undefined,
-      disabled: this.selectedTags.length >= 5,
-    }),
-    value: new FormControl(undefined, Validators.required),
+    tags: new FormControl(undefined),
+    value: new FormControl(undefined, [
+      Validators.required,
+      Validators.pattern("^(?:0|[1-9][0-9]*).[0-9]+$"),
+    ]),
   });
 
   public get tagsControl(): FormControl {
@@ -41,7 +46,11 @@ export class NewExpenseComponent implements OnInit {
     return this.expenseForm.get("value") as FormControl;
   }
 
-  constructor(private tagService: TagService) {}
+  constructor(
+    private tagService: TagService,
+    private expenseService: ExpenseService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.tagService
@@ -64,21 +73,69 @@ export class NewExpenseComponent implements OnInit {
     );
   }
 
-  public add(event: any) {
-    console.log("add invoked");
+  public remove(tagToRemove: Tag) {
+    this.selectedTags = this.selectedTags.filter(
+      (tag) => tag.name !== tagToRemove.name
+    );
+  }
+
+  public add(event: MatChipInputEvent) {
+    const selectedTag = event.value;
+
+    if (selectedTag !== "") {
+      const trimmedTag = selectedTag.trim();
+      if (
+        this.selectedTags.filter((tag) => tag.name === trimmedTag).length === 0
+      ) {
+        this.selectedTags.push({ name: trimmedTag });
+        this.checkIfDisable();
+      }
+      this.tagsInput.nativeElement.value = "";
+    }
   }
 
   public addExpenseClickHandler() {
-    console.log("addExpenseClickHandler invoked");
+    const expenseToAdd = this.expenseService.getExpenseFromData(
+      this.selectedTags,
+      this.valueControl.value
+    );
+
+    this.expenseService.addExpense(expenseToAdd).subscribe((response) => {
+      this.showAddExpenseModal();
+    });
+  }
+
+  private showAddExpenseModal() {
+    const dialogRef = this.dialog.open(AddedExpenseModalComponent, {
+      width: "350px",
+      data: {
+        label: "Success",
+        content: "Expense added succesfully",
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log("The dialog was closed");
+    });
   }
 
   public selected(event: MatAutocompleteSelectedEvent) {
     const selectedTag = event.option.value;
-    this.selectedTags.push(selectedTag);
+    if (
+      this.selectedTags.filter((tag) => tag.name === selectedTag.name)
+        .length === 0
+    ) {
+      this.selectedTags.push(selectedTag);
+      this.checkIfDisable();
+    }
     this.tagsInput.nativeElement.value = "";
   }
 
   public submitExpense(event: any) {
     console.log("submit expense invoked");
+  }
+
+  private checkIfDisable() {
+    if (this.selectedTags.length >= 5) this.tagsControl.disable();
   }
 }
