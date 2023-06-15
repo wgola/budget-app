@@ -14,9 +14,21 @@ services:
       - 8080:8080
 
   backend:
-    build:
-      context: ./backend
-    env_file:
-      - ./backend/.env
+    image: maven:3.9.1-eclipse-temurin-17-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app/
+    command: mvn spring-boot:run
     ports:
       - 3000:3000
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app/
+    entrypoint: sh ./entrypoint.sh
+    ports:
+      - 4200:4200
