@@ -13,6 +13,7 @@ import {
 } from "@angular/material/chips";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [AppComponent, NewExpenseComponent],
@@ -25,6 +26,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
     MatChipsModule,
     MatAutocompleteModule,
     MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [
     {
