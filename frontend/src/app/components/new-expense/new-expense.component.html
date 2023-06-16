@@ -58,7 +58,7 @@
           type="submit"
           mat-button
           (click)="addExpenseClickHandler()"
-          [disabled]="selectedTags.length < 1"
+          [disabled]="selectedTags.length < 1 || !expenseForm.valid"
         >
           Add expense
         </button>
