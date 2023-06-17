@@ -1,0 +1,48 @@
+<a mat-flat-button color="primary" routerLink="../">Add expense</a>
+<br />
+<br />
+<mat-table [dataSource]="allExpenses" class="mat-elevation-z8">
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      {{ element.id }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="date">
+    <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      {{ element.date }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="tags">
+    <mat-header-cell *matHeaderCellDef> Tags </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      {{ mapTags(element.tags) }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="value">
+    <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      {{ element.value }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="crud">
+    <mat-header-cell *matHeaderCellDef> CRUD </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <a (click)="openDialog(element, 'EDIT')" mat-stroked-button color="basic"
+        >Edit</a
+      >
+      <span>&nbsp;</span>
+      <a (click)="openDialog(element, 'DELETE')" mat-stroked-button color="warn"
+        >Delete</a
+      >
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>
+
+<ng-template #temp>
+  <span class="center">no data to display</span>
+</ng-template>

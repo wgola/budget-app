@@ -21,10 +21,24 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialogModule } from "@angular/material/dialog";
 import { AddedExpenseModalComponent } from "./components/new-expense/added-expense-modal/added-expense-modal.component";
+import { ExpensesTableComponent } from "./components/expenses-table/expenses-table.component";
+import { MatTableModule } from "@angular/material/table";
+import { EditExpenseModalComponent } from "./components/expenses-table/edit-expense-modal/edit-expense-modal.component";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatNativeDateModule } from "@angular/material/core";
 
 @NgModule({
-  declarations: [AppComponent, NewExpenseComponent, AddedExpenseModalComponent],
+  declarations: [
+    AppComponent,
+    NewExpenseComponent,
+    AddedExpenseModalComponent,
+    ExpensesTableComponent,
+    EditExpenseModalComponent,
+  ],
   imports: [
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatTableModule,
     MatDialogModule,
     MatFormFieldModule,
     BrowserModule,

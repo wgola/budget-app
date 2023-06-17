@@ -1,0 +1,52 @@
+<mat-card *ngIf="operationType === 'EDIT'">
+  <mat-card-content>
+    <form [formGroup]="editForm">
+      <mat-form-field>
+        <label>Tags</label>
+        <br />
+        <input matInput [formControl]="tagsCtrl" />
+      </mat-form-field>
+      <mat-form-field>
+        <label>Date</label>
+        <br />
+        <input matInput [formControl]="dateCtrl" [matDatepicker]="datepicker" />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="datepicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #datepicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <label>Value</label>
+        <br />
+        <input matInput [formControl]="valueCtrl" type="number" />
+      </mat-form-field>
+    </form>
+    <div mat-dialog-actions class="center">
+      <button mat-flat-button color="warn" (click)="cancelClickHandler()">
+        Cancel
+      </button>
+      <button mat-flat-button color="accent" (click)="submitChangesButton()">
+        OK
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>
+<mat-card *ngIf="operationType === 'DELETE'">
+  <mat-card-content>
+    <p>Are you sure that you want to delete this expense?</p>
+    <br />
+    <div mat-dialog-actions class="center">
+      <button mat-flat-button color="warn" (click)="cancelClickHandler()">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        (click)="deleteExpenseClickHandler()"
+      >
+        Delete
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>
