@@ -17,7 +17,7 @@ export class EditExpenseModalComponent implements OnInit {
   public editedForm: any;
 
   public get dateCtrl(): FormControl {
-    return this.editForm.get("date") as FormControl;
+    return this.editForm.get("creationDate") as FormControl;
   }
 
   public get tagsCtrl(): FormControl {
@@ -35,11 +35,11 @@ export class EditExpenseModalComponent implements OnInit {
   ) {
     this.startingExpenseData = data.expense;
     this.operationType = data.operationType;
-    const { id, ...rest } = data.expense;
-    this.editedForm = rest;
 
     this.editForm = new FormGroup({
-      date: new FormControl(data.expense.date, [Validators.required]),
+      creationDate: new FormControl(data.expense.creationDate, [
+        Validators.required,
+      ]),
       value: new FormControl(data.expense.value, [
         Validators.required,
         Validators.pattern("^(?:0|[1-9][0-9]*).[0-9]+$"),
@@ -52,6 +52,9 @@ export class EditExpenseModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const { expenseID, ...rest } = this.startingExpenseData;
+    this.editedForm = rest;
+
     this.editForm.valueChanges.subscribe((response) => {
       this.editedForm = response;
     });
@@ -59,7 +62,7 @@ export class EditExpenseModalComponent implements OnInit {
 
   public deleteExpenseClickHandler() {
     this.expenseService
-      .deleteExpense(this.startingExpenseData.id)
+      .deleteExpense(this.startingExpenseData.expenseID)
       .subscribe((response) => {
         this.dialogRef.close();
       });
@@ -71,13 +74,13 @@ export class EditExpenseModalComponent implements OnInit {
 
   public submitChangesButton() {
     const expenseToSubmit: Expense = {
-      id: this.startingExpenseData.id,
-      date:
-        typeof this.editedForm.date === "string"
-          ? this.editedForm.date
-          : this.editedForm.date.toISOString(),
       ...this.editedForm,
+      expenseID: this.startingExpenseData.expenseID,
+      creationDate: this.editedForm.formattedDate
+        ? this.editedForm.formattedDate
+        : this.editedForm.creationDate,
     };
+    console.log(expenseToSubmit);
 
     this.expenseService.saveExpense(expenseToSubmit).subscribe((response) => {
       this.dialogRef.close();

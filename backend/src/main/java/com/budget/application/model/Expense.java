@@ -30,11 +30,13 @@ public class Expense {
     @Column(name = "`value`")
     private Double value;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, targetEntity = Tag.class)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Tag.class)
     @JoinTable(name = "expenses_tags", joinColumns = {
             @JoinColumn(name = "expense_id", referencedColumnName = "expense_id", nullable = false, updatable = false) }, inverseJoinColumns = {
                     @JoinColumn(name = "tag_id", referencedColumnName = "tag_id", nullable = false, updatable = false) })
     private List<Tag> tags;
+
+    private String formattedDate;
 
     public Expense() {
     }
@@ -69,5 +71,13 @@ public class Expense {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
     }
 }

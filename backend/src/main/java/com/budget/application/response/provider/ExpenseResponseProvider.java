@@ -1,6 +1,8 @@
 package com.budget.application.response.provider;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +14,9 @@ import org.springframework.util.StringUtils;
 
 import com.budget.application.model.Expense;
 import com.budget.application.model.ExpensesSearchCriteria;
+import com.budget.application.model.Tag;
 import com.budget.application.service.ExpensesService;
+import com.budget.application.service.TagService;
 import com.budget.application.utils.CommonTools;
 
 @Service
@@ -20,6 +24,9 @@ public class ExpenseResponseProvider {
 
     @Autowired
     private ExpensesService expensesService;
+
+    @Autowired
+    private TagService tagService;
 
     public ResponseEntity<ExpensesList> getAllExpenses() {
         try {
@@ -32,8 +39,19 @@ public class ExpenseResponseProvider {
         }
     }
 
-    public ResponseEntity<ExpensesList> createExpense(Expense expense) {
+    public ResponseEntity<ExpensesList> saveExpense(Expense expense) {
         try {
+            if (!StringUtils.hasLength(expense.getFormattedDate())) {
+                expense.setCreationDate(LocalDateTime.now());
+            } else {
+                expense.setCreationDate(CommonTools.getLocalDateTimeFromISODate(expense.getFormattedDate()));
+            }
+            List<Tag> tagsFromExpense = expense.getTags();
+            List<Tag> newTags = new ArrayList<Tag>();
+            for (Tag currenTag : tagsFromExpense) {
+                newTags.add(tagService.createTag(currenTag.getName()));
+            }
+            expense.setTags(newTags);
             Expense createdExpense = this.expensesService.createExpense(expense);
             ExpensesList body = new ExpensesList(Arrays.asList(createdExpense));
 

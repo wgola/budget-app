@@ -5,13 +5,13 @@
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
     <mat-cell *matCellDef="let element">
-      {{ element.id }}
+      {{ element.expenseID }}
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="date">
     <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
     <mat-cell *matCellDef="let element">
-      {{ element.date }}
+      {{ element.creationDate?.substring(0, 10) }}
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="tags">

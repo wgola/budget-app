@@ -25,8 +25,8 @@ public class ExpenseController {
 
     @CrossOrigin
     @PostMapping(value = "/expense")
-    public ResponseEntity<ExpensesList> addNewExpense(@RequestBody Expense expense) {
-        return this.expenseResponseProvider.createExpense(expense);
+    public ResponseEntity<ExpensesList> saveExpense(@RequestBody Expense expense) {
+        return this.expenseResponseProvider.saveExpense(expense);
     }
 
     @CrossOrigin

@@ -20,9 +20,15 @@ export class ExpensesTableComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.expenseService
-      .getAllExpenses()
-      .subscribe((response) => (this.allExpenses = response));
+    this.getAllExpense();
+  }
+
+  public getAllExpense() {
+    this.expenseService.getAllExpenses().subscribe((response) => {
+      console.log(response);
+
+      this.allExpenses = response;
+    });
   }
 
   public mapTags(param: Tag[]) {
@@ -46,7 +52,7 @@ export class ExpensesTableComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log("the dialog was closed");
+      this.getAllExpense();
     });
   }
 }

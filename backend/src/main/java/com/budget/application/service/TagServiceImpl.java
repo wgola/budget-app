@@ -17,9 +17,14 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag createTag(String tagName) {
-        Tag newTag = new Tag(tagName);
+        List<Tag> foundByName = tagRepository.findByName(tagName);
+        if (foundByName.isEmpty()) {
+            Tag newTag = new Tag(tagName);
 
-        return this.tagRepository.save(newTag);
+            return this.tagRepository.save(newTag);
+        }
+
+        return foundByName.get(0);
     }
 
     @Override

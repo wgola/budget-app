@@ -4,7 +4,7 @@ import {
   HttpHeaders,
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, Subject, of } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { Expense } from "src/app/models/Expense";
 import { Tag } from "src/app/models/Tag";
 
@@ -12,6 +12,8 @@ import { Tag } from "src/app/models/Tag";
   providedIn: "root",
 })
 export class ExpenseService {
+  public retrievedExpenseResult: Observable<Expense[]>;
+  public deleteExpenseResult: Observable<Expense[]>;
   public addedExpenseResult: Observable<Expense[]>;
   public hostAddress: string = "http://localhost:3000/";
   public subject = new Subject<HttpErrorResponse>();
@@ -19,7 +21,18 @@ export class ExpenseService {
   constructor(private httpClient: HttpClient) {}
 
   public deleteExpense(expenseID: number) {
-    return of([]);
+    this.deleteExpenseResult = new Observable((observer) => {
+      const url = this.hostAddress + "expense/" + expenseID;
+
+      this.httpClient.delete<any>(url).subscribe(
+        (response) => {
+          observer.next(response);
+        },
+        (err) => this.handleException(err)
+      );
+    });
+
+    return this.deleteExpenseResult;
   }
 
   public saveExpense(expense: Expense) {
@@ -31,19 +44,27 @@ export class ExpenseService {
         }),
       };
 
-      const tagNames: string[] =
-        typeof expense.tags === "string"
-          ? expense.tags.split(",")
-          : expense.tags.map((el) => el.name);
+      if (typeof expense.tags === "string") {
+        const tags: string = expense.tags;
+        const splittedTags = tags.split(",");
+        expense.tags = splittedTags.map((el) => {
+          return { name: el };
+        });
+      }
 
-      const objectToSend = expense.id
+      const objectToSend = expense.expenseID
         ? {
-            id: expense.id,
+            expenseID: expense.expenseID,
             value: expense.value,
-            tags: tagNames,
-            formattedDate: expense.date,
+            tags: expense.tags,
+            formattedDate: expense.creationDate,
           }
-        : { tags: tagNames, value: expense.value };
+        : {
+            tags: expense.tags,
+            value: expense.value,
+          };
+
+      console.log(objectToSend);
 
       this.httpClient.post<any>(url, objectToSend, httpOptions).subscribe(
         (response) => {
@@ -65,25 +86,26 @@ export class ExpenseService {
   }
 
   public getAllExpenses(): Observable<Expense[]> {
-    const expense1 = {
-      id: 0,
-      tags: [{ name: "tag1" }],
-      value: 20.5,
-      date: "2020-05-10",
-    };
-    const expense2 = {
-      id: 1,
-      tags: [{ name: "tag2" }],
-      value: 23.5,
-      date: "2020-05-10",
-    };
+    this.retrievedExpenseResult = new Observable((observer) => {
+      const url = this.hostAddress + "expense";
 
-    return of([expense1, expense2]);
+      this.httpClient.get<{ expenses: Expense[] }>(url).subscribe(
+        (response) => {
+          const expenses = response.expenses;
+          observer.next(expenses);
+        },
+        (err) => this.handleException(err)
+      );
+    });
+
+    return this.retrievedExpenseResult;
   }
 
   public getExpenseFromData(tags: Tag[], value: number): Expense {
     const expenseDate = new Date().toISOString();
-    const expense = { id: 0, tags, value, date: expenseDate };
+    const expense = { expenseID: 0, tags, value, creationDate: expenseDate };
+
+    console.log(expense);
 
     return expense;
   }
