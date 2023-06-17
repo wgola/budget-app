@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,21 +23,25 @@ public class ExpenseController {
     @Autowired
     private ExpenseResponseProvider expenseResponseProvider;
 
+    @CrossOrigin
     @PostMapping(value = "/expense")
     public ResponseEntity<ExpensesList> addNewExpense(@RequestBody Expense expense) {
         return this.expenseResponseProvider.createExpense(expense);
     }
 
+    @CrossOrigin
     @DeleteMapping(value = "/expense/{expenseID}")
     public ResponseEntity<ExpensesList> deleteExpense(@PathVariable Long expenseID) {
         return this.expenseResponseProvider.deleteExpense(expenseID);
     }
 
+    @CrossOrigin
     @GetMapping(value = "/expense")
     public ResponseEntity<ExpensesList> getAllExpenses() {
         return this.expenseResponseProvider.getAllExpenses();
     }
 
+    @CrossOrigin
     @GetMapping(value = "/expense/criteria")
     public ResponseEntity<ExpensesList> getExpensesBySearchCriteria(
             @RequestParam List<String> tagNames,

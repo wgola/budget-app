@@ -1,20 +1,40 @@
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, Subject, of } from "rxjs";
 import { Tag } from "src/app/models/Tag";
 
 @Injectable({
   providedIn: "root",
 })
 export class TagService {
-  constructor() {}
+  public allTagsResults: Observable<Tag[]>;
+  public hostAdress: string = "http://localhost:3000/";
+  public subject = new Subject<HttpErrorResponse>();
+
+  constructor(private http: HttpClient) {}
+
+  public onErrorOccurrs(): Observable<HttpErrorResponse> {
+    return this.subject.asObservable();
+  }
 
   public getAllTags(): Observable<Tag[]> {
-    let tag1: Tag = { name: "shop1" };
-    let tag2: Tag = { name: "shop2" };
-    let tag3: Tag = { name: "electronics" };
-    let tag4: Tag = { name: "grocieries" };
-    let tags = [tag1, tag2, tag3, tag4];
+    const url = this.hostAdress + "tag";
 
-    return of(tags);
+    this.allTagsResults = new Observable((observer) => {
+      this.http.get<{ tags: Tag[] }>(url).subscribe(
+        (response) => {
+          const tagsFromResponse = response.tags;
+
+          observer.next(tagsFromResponse);
+        },
+        (err) => this.handleException(err)
+      );
+    });
+
+    return this.allTagsResults;
+  }
+
+  public handleException(err: HttpErrorResponse) {
+    this.subject.next(err);
   }
 }

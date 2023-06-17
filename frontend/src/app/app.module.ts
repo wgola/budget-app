@@ -26,6 +26,8 @@ import { MatTableModule } from "@angular/material/table";
 import { EditExpenseModalComponent } from "./components/expenses-table/edit-expense-modal/edit-expense-modal.component";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
+import { HttpClientModule } from "@angular/common/http";
+import { AlertComponent } from './components/common/alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { MatNativeDateModule } from "@angular/material/core";
     AddedExpenseModalComponent,
     ExpensesTableComponent,
     EditExpenseModalComponent,
+    AlertComponent,
   ],
   imports: [
     MatNativeDateModule,
@@ -42,6 +45,7 @@ import { MatNativeDateModule } from "@angular/material/core";
     MatDialogModule,
     MatFormFieldModule,
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     NoopAnimationsModule,
     MatCardModule,
