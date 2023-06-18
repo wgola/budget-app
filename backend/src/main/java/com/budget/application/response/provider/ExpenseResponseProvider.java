@@ -41,10 +41,8 @@ public class ExpenseResponseProvider {
 
     public ResponseEntity<ExpensesList> saveExpense(Expense expense) {
         try {
-            if (!StringUtils.hasLength(expense.getFormattedDate())) {
+            if (expense.getCreationDate() == null) {
                 expense.setCreationDate(LocalDateTime.now());
-            } else {
-                expense.setCreationDate(CommonTools.getLocalDateTimeFromISODate(expense.getFormattedDate()));
             }
             List<Tag> tagsFromExpense = expense.getTags();
             List<Tag> newTags = new ArrayList<Tag>();

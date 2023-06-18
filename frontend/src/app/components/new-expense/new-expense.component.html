@@ -3,7 +3,7 @@
     <mat-card-title class="center">New Expense</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form [formGroup]="expenseForm" (ngSubmit)="submitExpense($event)">
+    <form [formGroup]="expenseForm" (ngSubmit)="addExpenseClickHandler()">
       <p>
         <mat-form-field class="chip-list">
           <mat-chip-grid #chipList aria-label="Tags selection">
@@ -42,7 +42,7 @@
           <input
             matInput
             #valueInput
-            formControlName="value"
+            [formControl]="valueControl"
             type="number"
             placeholder="Add expense value"
           />
@@ -63,7 +63,6 @@
           color="accent"
           type="submit"
           mat-button
-          (click)="addExpenseClickHandler()"
           [disabled]="selectedTags.length < 1 || !expenseForm.valid"
         >
           Add expense

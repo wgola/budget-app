@@ -37,9 +37,10 @@ export class EditExpenseModalComponent implements OnInit {
     this.operationType = data.operationType;
 
     this.editForm = new FormGroup({
-      creationDate: new FormControl(data.expense.creationDate, [
-        Validators.required,
-      ]),
+      creationDate: new FormControl(
+        data.expense.creationDate,
+        Validators.required
+      ),
       value: new FormControl(data.expense.value, [
         Validators.required,
         Validators.pattern("^(?:0|[1-9][0-9]*).[0-9]+$"),
@@ -76,11 +77,11 @@ export class EditExpenseModalComponent implements OnInit {
     const expenseToSubmit: Expense = {
       ...this.editedForm,
       expenseID: this.startingExpenseData.expenseID,
-      creationDate: this.editedForm.formattedDate
-        ? this.editedForm.formattedDate
-        : this.editedForm.creationDate,
+      creationDate:
+        typeof this.editedForm.creationDate === "object"
+          ? this.editedForm.creationDate.toISOString()
+          : this.editedForm.creationDate,
     };
-    console.log(expenseToSubmit);
 
     this.expenseService.saveExpense(expenseToSubmit).subscribe((response) => {
       this.dialogRef.close();

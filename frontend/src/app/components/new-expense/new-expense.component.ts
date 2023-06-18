@@ -75,7 +75,7 @@ export class NewExpenseComponent implements OnInit {
       .subscribe((response) => (this.allTags = response));
 
     this.filteredTags = this.tagsControl.valueChanges.pipe(
-      map((val: any | null) =>
+      map((val: string | null) =>
         val ? this.filterTags(val) : this.allTags.slice()
       )
     );
@@ -88,9 +88,8 @@ export class NewExpenseComponent implements OnInit {
     });
   }
 
-  private filterTags(tag: any): Tag[] {
-    const filterValue =
-      typeof tag === "object" ? tag.name.toLowerCase() : tag.toLowerCase();
+  private filterTags(tag: string): Tag[] {
+    const filterValue = tag.toLowerCase();
 
     return this.allTags.filter((val) =>
       val.name.toLowerCase().includes(filterValue)
@@ -119,10 +118,10 @@ export class NewExpenseComponent implements OnInit {
   }
 
   public addExpenseClickHandler() {
-    const expenseToAdd = this.expenseService.getExpenseFromData(
-      this.selectedTags,
-      this.valueControl.value
-    );
+    const expenseToAdd = {
+      tags: this.selectedTags,
+      value: this.valueControl.value,
+    };
 
     this.expenseService.addExpense(expenseToAdd).subscribe((response) => {
       this.showAddExpenseModal();
@@ -153,10 +152,6 @@ export class NewExpenseComponent implements OnInit {
       this.checkIfDisable();
     }
     this.tagsInput.nativeElement.value = "";
-  }
-
-  public submitExpense(event: any) {
-    console.log("submit expense invoked");
   }
 
   private checkIfDisable() {

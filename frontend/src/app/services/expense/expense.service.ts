@@ -15,6 +15,7 @@ export class ExpenseService {
   public retrievedExpenseResult: Observable<Expense[]>;
   public deleteExpenseResult: Observable<Expense[]>;
   public addedExpenseResult: Observable<Expense[]>;
+  public editedExpenseResult: Observable<Expense[]>;
   public hostAddress: string = "http://localhost:3000/";
   public subject = new Subject<HttpErrorResponse>();
 
@@ -36,7 +37,7 @@ export class ExpenseService {
   }
 
   public saveExpense(expense: Expense) {
-    this.addedExpenseResult = new Observable((observer) => {
+    this.editedExpenseResult = new Observable((observer) => {
       const url = this.hostAddress + "expense";
       const httpOptions = {
         headers: new HttpHeaders({
@@ -52,21 +53,7 @@ export class ExpenseService {
         });
       }
 
-      const objectToSend = expense.expenseID
-        ? {
-            expenseID: expense.expenseID,
-            value: expense.value,
-            tags: expense.tags,
-            formattedDate: expense.creationDate,
-          }
-        : {
-            tags: expense.tags,
-            value: expense.value,
-          };
-
-      console.log(objectToSend);
-
-      this.httpClient.post<any>(url, objectToSend, httpOptions).subscribe(
+      this.httpClient.post<any>(url, expense, httpOptions).subscribe(
         (response) => {
           observer.next(response);
         },
@@ -74,7 +61,7 @@ export class ExpenseService {
       );
     });
 
-    return this.addedExpenseResult;
+    return this.editedExpenseResult;
   }
 
   public handleException(err: HttpErrorResponse) {
@@ -101,16 +88,23 @@ export class ExpenseService {
     return this.retrievedExpenseResult;
   }
 
-  public getExpenseFromData(tags: Tag[], value: number): Expense {
-    const expenseDate = new Date().toISOString();
-    const expense = { expenseID: 0, tags, value, creationDate: expenseDate };
+  public addExpense(expense: { tags: Tag[]; value: number }) {
+    this.addedExpenseResult = new Observable((observer) => {
+      const url = this.hostAddress + "expense";
+      const httpOptions = {
+        headers: new HttpHeaders({
+          "Content-Type": "application/json",
+        }),
+      };
 
-    console.log(expense);
+      this.httpClient.post<any>(url, expense, httpOptions).subscribe(
+        (response) => {
+          observer.next(response);
+        },
+        (err) => this.handleException(err)
+      );
+    });
 
-    return expense;
-  }
-
-  public addExpense(expense: Expense) {
-    return this.saveExpense(expense);
+    return this.addedExpenseResult;
   }
 }
