@@ -25,8 +25,6 @@ export class ExpensesTableComponent implements OnInit {
 
   public getAllExpense() {
     this.expenseService.getAllExpenses().subscribe((response) => {
-      console.log(response);
-
       this.allExpenses = response;
     });
   }
