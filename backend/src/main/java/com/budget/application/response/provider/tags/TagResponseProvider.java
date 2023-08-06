@@ -1,25 +1,27 @@
-package com.budget.application.response.provider;
+package com.budget.application.response.provider.tags;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.budget.application.model.Tag;
-import com.budget.application.service.TagService;
+import com.budget.application.service.tags.TagService;
 
 @Service
 public class TagResponseProvider {
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    public TagResponseProvider(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     public ResponseEntity<TagsList> getAllTags() {
         try {
-            List<Tag> retrievedTags = this.tagService.getAllTags().get();
+            List<Tag> retrievedTags = tagService.getAllTags().get();
             TagsList body = new TagsList(retrievedTags);
 
             return new ResponseEntity<TagsList>(body, HttpStatus.OK);
@@ -30,7 +32,7 @@ public class TagResponseProvider {
 
     public ResponseEntity<TagsList> createTag(String tagName) {
         try {
-            Tag createdTag = this.tagService.createTag(tagName);
+            Tag createdTag = tagService.createTag(tagName);
             TagsList body = new TagsList(Arrays.asList(createdTag));
 
             return new ResponseEntity<TagsList>(body, HttpStatus.CREATED);
@@ -41,7 +43,7 @@ public class TagResponseProvider {
 
     public ResponseEntity<TagsList> deleteTag(Long tagID) {
         try {
-            this.tagService.deleteTag(tagID);
+            tagService.deleteTag(tagID);
 
             return new ResponseEntity<TagsList>(new TagsList(), HttpStatus.OK);
         } catch (Exception e) {

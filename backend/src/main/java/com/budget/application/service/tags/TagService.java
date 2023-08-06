@@ -1,4 +1,4 @@
-package com.budget.application.service;
+package com.budget.application.service.tags;
 
 import java.util.Optional;
 import java.util.List;

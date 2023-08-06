@@ -2,7 +2,6 @@ package com.budget.application.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,42 +9,45 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.budget.application.model.Expense;
-import com.budget.application.response.provider.ExpenseResponseProvider;
-import com.budget.application.response.provider.ExpensesList;
+import com.budget.application.response.provider.expenses.ExpenseResponseProvider;
+import com.budget.application.response.provider.expenses.ExpensesList;
 
 @RestController
+@CrossOrigin
+@RequestMapping("/expense")
 public class ExpenseController {
 
-    @Autowired
-    private ExpenseResponseProvider expenseResponseProvider;
+    private final ExpenseResponseProvider expenseResponseProvider;
 
-    @CrossOrigin
-    @PostMapping(value = "/expense")
+    public ExpenseController(ExpenseResponseProvider expenseResponseProvider) {
+        this.expenseResponseProvider = expenseResponseProvider;
+    }
+
+    @PostMapping
     public ResponseEntity<ExpensesList> saveExpense(@RequestBody Expense expense) {
-        return this.expenseResponseProvider.saveExpense(expense);
+        return expenseResponseProvider.saveExpense(expense);
     }
 
-    @CrossOrigin
-    @DeleteMapping(value = "/expense/{expenseID}")
+    @DeleteMapping("/{expenseID}")
     public ResponseEntity<ExpensesList> deleteExpense(@PathVariable Long expenseID) {
-        return this.expenseResponseProvider.deleteExpense(expenseID);
+        return expenseResponseProvider.deleteExpense(expenseID);
     }
 
-    @CrossOrigin
-    @GetMapping(value = "/expense")
+    @GetMapping
     public ResponseEntity<ExpensesList> getAllExpenses() {
-        return this.expenseResponseProvider.getAllExpenses();
+        return expenseResponseProvider.getAllExpenses();
     }
 
-    @CrossOrigin
-    @GetMapping(value = "/expense/criteria")
+    @GetMapping("/criteria")
     public ResponseEntity<ExpensesList> getExpensesBySearchCriteria(
             @RequestParam List<String> tagNames,
-            @RequestParam String fromDate, @RequestParam String toDate) {
-        return this.expenseResponseProvider.getExpensesBySearchCriteria(tagNames, fromDate, toDate);
+            @RequestParam String fromDate,
+            @RequestParam String toDate) {
+        return expenseResponseProvider.getExpensesBySearchCriteria(tagNames, fromDate, toDate);
     }
 }

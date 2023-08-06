@@ -1,15 +1,7 @@
 package com.budget.application.repository;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.repository.CrudRepository;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.budget.application.model.Expense;
 
-public interface ExpenseRepository extends CrudRepository<Expense, Long> {
-
-    Optional<Expense> findById(long id);
-
-    List<Expense> findAll();
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 }

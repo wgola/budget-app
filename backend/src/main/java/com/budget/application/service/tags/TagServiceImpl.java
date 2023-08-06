@@ -1,9 +1,8 @@
-package com.budget.application.service;
+package com.budget.application.service.tags;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.budget.application.model.Tag;
@@ -12,16 +11,20 @@ import com.budget.application.repository.TagRepository;
 @Service
 public class TagServiceImpl implements TagService {
 
-    @Autowired
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
+
+    public TagServiceImpl(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
     @Override
     public Tag createTag(String tagName) {
         List<Tag> foundByName = tagRepository.findByName(tagName);
+
         if (foundByName.isEmpty()) {
             Tag newTag = new Tag(tagName);
 
-            return this.tagRepository.save(newTag);
+            return tagRepository.save(newTag);
         }
 
         return foundByName.get(0);
@@ -29,19 +32,19 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Optional<List<Tag>> getAllTags() {
-        List<Tag> allTags = this.tagRepository.findAll();
+        List<Tag> allTags = tagRepository.findAll();
 
         return Optional.of(allTags);
     }
 
     @Override
     public void deleteTag(Long tagId) {
-        this.tagRepository.deleteById(tagId);
+        tagRepository.deleteById(tagId);
     }
 
     @Override
     public Optional<Tag> getTagByName(String tagName) {
-        List<Tag> foundByName = this.tagRepository.findByName(tagName);
+        List<Tag> foundByName = tagRepository.findByName(tagName);
         Tag foundTag = foundByName.size() > 0 ? foundByName.get(0) : null;
 
         return Optional.of(foundTag);

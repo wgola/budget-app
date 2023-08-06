@@ -1,12 +1,10 @@
-package com.budget.application.response.provider;
+package com.budget.application.response.provider.expenses;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,22 +13,25 @@ import org.springframework.util.StringUtils;
 import com.budget.application.model.Expense;
 import com.budget.application.model.ExpensesSearchCriteria;
 import com.budget.application.model.Tag;
-import com.budget.application.service.ExpensesService;
-import com.budget.application.service.TagService;
+import com.budget.application.service.expenses.ExpensesService;
+import com.budget.application.service.tags.TagService;
 import com.budget.application.utils.CommonTools;
 
 @Service
 public class ExpenseResponseProvider {
 
-    @Autowired
-    private ExpensesService expensesService;
+    private final ExpensesService expensesService;
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    public ExpenseResponseProvider(ExpensesService expensesService, TagService tagService) {
+        this.expensesService = expensesService;
+        this.tagService = tagService;
+    }
 
     public ResponseEntity<ExpensesList> getAllExpenses() {
         try {
-            List<Expense> retrievedExpenses = this.expensesService.getAllExpenses().get();
+            List<Expense> retrievedExpenses = expensesService.getAllExpenses().get();
             ExpensesList body = new ExpensesList(retrievedExpenses);
 
             return new ResponseEntity<ExpensesList>(body, HttpStatus.OK);
@@ -41,16 +42,18 @@ public class ExpenseResponseProvider {
 
     public ResponseEntity<ExpensesList> saveExpense(Expense expense) {
         try {
-            if (expense.getCreationDate() == null) {
+            if (expense.getCreationDate() == null)
                 expense.setCreationDate(LocalDateTime.now());
-            }
-            List<Tag> tagsFromExpense = expense.getTags();
-            List<Tag> newTags = new ArrayList<Tag>();
-            for (Tag currenTag : tagsFromExpense) {
-                newTags.add(tagService.createTag(currenTag.getName()));
-            }
+
+            List<Tag> newTags = expense.getTags()
+                    .stream()
+                    .map(Tag::getName)
+                    .map(tagService::createTag)
+                    .toList();
+
             expense.setTags(newTags);
-            Expense createdExpense = this.expensesService.createExpense(expense);
+
+            Expense createdExpense = expensesService.createExpense(expense);
             ExpensesList body = new ExpensesList(Arrays.asList(createdExpense));
 
             return new ResponseEntity<ExpensesList>(body, HttpStatus.CREATED);
@@ -61,7 +64,7 @@ public class ExpenseResponseProvider {
 
     public ResponseEntity<ExpensesList> deleteExpense(Long expenseID) {
         try {
-            this.expensesService.deleteExpense(expenseID);
+            expensesService.deleteExpense(expenseID);
 
             return new ResponseEntity<ExpensesList>(new ExpensesList(), HttpStatus.OK);
         } catch (Exception e) {
@@ -95,7 +98,7 @@ public class ExpenseResponseProvider {
         }
 
         try {
-            List<Expense> retrievedExpenses = this.expensesService.getExpensesBySearchCriteria(expensesSearchCriteria)
+            List<Expense> retrievedExpenses = expensesService.getExpensesBySearchCriteria(expensesSearchCriteria)
                     .get();
             ExpensesList body = new ExpensesList(retrievedExpenses);
 

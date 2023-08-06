@@ -13,7 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "tags")
 public class Tag {
@@ -31,34 +35,6 @@ public class Tag {
     private List<Expense> expenses = new ArrayList<Expense>();
 
     public Tag(String name) {
-        super();
         this.name = name;
-    }
-
-    public Tag() {
-    }
-
-    public Long getTagID() {
-        return this.tagID;
-    }
-
-    public void setTagID(Long tagID) {
-        this.tagID = tagID;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Expense> getExpenses() {
-        return this.expenses;
-    }
-
-    public void setExpenses(List<Expense> expenses) {
-        this.expenses = expenses;
     }
 }

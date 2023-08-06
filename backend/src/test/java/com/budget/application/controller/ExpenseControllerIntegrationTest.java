@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.budget.application.model.Expense;
-import com.budget.application.response.provider.ExpensesList;
+import com.budget.application.response.provider.expenses.ExpensesList;
 import com.budget.application.utils.TestUtils;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
 class ExpenseControllerIntegrationTest {
 
@@ -38,7 +38,7 @@ class ExpenseControllerIntegrationTest {
 
     private String createURLWithPort(String uri) {
         StringBuilder result = new StringBuilder("http://localhost:")
-                .append(this.port)
+                .append(port)
                 .append(uri);
 
         return result.toString();
@@ -46,7 +46,7 @@ class ExpenseControllerIntegrationTest {
 
     private String createURLWithPort(String uri, String tagName, String fromDate, String toDate) {
         StringBuilder result = new StringBuilder("http://localhost:")
-                .append(this.port)
+                .append(port)
                 .append(uri)
                 .append("?tagNames=")
                 .append(tagName)
@@ -60,14 +60,19 @@ class ExpenseControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Expense expenseToAdd = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 12, 1, 0, 0));
-        this.addExpenseEntity = new HttpEntity<>(expenseToAdd, this.headers);
+        Expense expenseToAdd = TestUtils.generateTestExpense(
+                1,
+                LocalDateTime.of(2018, 11, 12, 1, 0, 0));
+
+        addExpenseEntity = new HttpEntity<>(expenseToAdd, headers);
     }
 
     @Test
     void testAddExpense() {
-        ResponseEntity<ExpensesList> addExpenseResponse = this.restTemplate
-                .postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        var addExpenseResponse = restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
         assertEquals(HttpStatus.CREATED, addExpenseResponse.getStatusCode());
         assertNotEquals(0, addExpenseResponse.getBody().getExpenses().size());
@@ -75,10 +80,14 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpenses() {
-        this.restTemplate.postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        ResponseEntity<ExpensesList> getExpenseResponse = this.restTemplate
-                .getForEntity(this.createURLWithPort("/expense"), ExpensesList.class);
+        var getExpenseResponse = restTemplate.getForEntity(
+                createURLWithPort("/expense"),
+                ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpenseResponse.getStatusCode());
         assertNotEquals(0, getExpenseResponse.getBody().getExpenses().size());
@@ -86,13 +95,20 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testDeleteExpense() {
-        ResponseEntity<ExpensesList> addExpenseResponse = this.restTemplate
-                .postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        var addExpenseResponse = restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        Long addedExpenseID = addExpenseResponse.getBody().getExpenses().get(0).getExpenseID();
+        Long addedExpenseID = addExpenseResponse.getBody()
+                .getExpenses()
+                .get(0)
+                .getExpenseID();
 
-        ResponseEntity<ExpensesList> deleteExpenseResponse = this.restTemplate.exchange(
-                this.createURLWithPort("/expense/" + addedExpenseID), HttpMethod.DELETE, addExpenseResponse,
+        var deleteExpenseResponse = restTemplate.exchange(
+                createURLWithPort("/expense/" + addedExpenseID),
+                HttpMethod.DELETE,
+                addExpenseResponse,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, deleteExpenseResponse.getStatusCode());
@@ -101,13 +117,26 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpensesBySearchCriteriaWithTagNamesSettedOnly() {
-        ResponseEntity<ExpensesList> addExpenseResponse = this.restTemplate
-                .postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        var addExpenseResponse = restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        String tagName = addExpenseResponse.getBody().getExpenses().get(0).getTags().get(0).getName();
-        String searchCriteriaURL = this.createURLWithPort("/expense/criteria", tagName, "", "");
+        String tagName = addExpenseResponse.getBody()
+                .getExpenses()
+                .get(0)
+                .getTags()
+                .get(0)
+                .getName();
 
-        ResponseEntity<ExpensesList> getExpensesByCriteriaResponse = this.restTemplate.getForEntity(searchCriteriaURL,
+        String searchCriteriaURL = createURLWithPort(
+                "/expense/criteria",
+                tagName,
+                "",
+                "");
+
+        var getExpensesByCriteriaResponse = restTemplate.getForEntity(
+                searchCriteriaURL,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpensesByCriteriaResponse.getStatusCode());
@@ -116,11 +145,19 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpensesBySearchCriteriaWithFromDateSettedOnly() {
-        this.restTemplate.postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        String searchCriteriaURL = this.createURLWithPort("/expense/criteria", "", this.fromDate.toString(), "");
+        String searchCriteriaURL = createURLWithPort(
+                "/expense/criteria",
+                "",
+                fromDate.toString(),
+                "");
 
-        ResponseEntity<ExpensesList> getExpensesByCriteriaResponse = this.restTemplate.getForEntity(searchCriteriaURL,
+        var getExpensesByCriteriaResponse = restTemplate.getForEntity(
+                searchCriteriaURL,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpensesByCriteriaResponse.getStatusCode());
@@ -129,11 +166,19 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpensesBySearchCriteriaWithToDateSettedOnly() {
-        this.restTemplate.postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        String searchCriteriaURL = this.createURLWithPort("/expense/criteria", "", "", this.toDate.toString());
+        String searchCriteriaURL = createURLWithPort(
+                "/expense/criteria",
+                "",
+                "",
+                toDate.toString());
 
-        ResponseEntity<ExpensesList> getExpensesByCriteriaResponse = this.restTemplate.getForEntity(searchCriteriaURL,
+        var getExpensesByCriteriaResponse = restTemplate.getForEntity(
+                searchCriteriaURL,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpensesByCriteriaResponse.getStatusCode());
@@ -142,12 +187,18 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpensesBySearchCriteriaWithBothDatesSetted() {
-        this.restTemplate.postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        String searchCriteriaURL = this.createURLWithPort("/expense/criteria", "", this.fromDate.toString(),
-                this.toDate.toString());
+        String searchCriteriaURL = createURLWithPort(
+                "/expense/criteria",
+                "", fromDate.toString(),
+                toDate.toString());
 
-        ResponseEntity<ExpensesList> getExpensesByCriteriaResponse = this.restTemplate.getForEntity(searchCriteriaURL,
+        var getExpensesByCriteriaResponse = restTemplate.getForEntity(
+                searchCriteriaURL,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpensesByCriteriaResponse.getStatusCode());
@@ -156,14 +207,26 @@ class ExpenseControllerIntegrationTest {
 
     @Test
     void testGetExpensesBySearchCriteriaWithAllDataSetted() {
-        ResponseEntity<ExpensesList> addExpenseResponse = this.restTemplate
-                .postForEntity(this.createURLWithPort("/expense"), this.addExpenseEntity, ExpensesList.class);
+        var addExpenseResponse = restTemplate.postForEntity(
+                createURLWithPort("/expense"),
+                addExpenseEntity,
+                ExpensesList.class);
 
-        String tagName = addExpenseResponse.getBody().getExpenses().get(0).getTags().get(0).getName();
-        String searchCriteriaURL = this.createURLWithPort("/expense/criteria", tagName, this.fromDate.toString(),
-                this.toDate.toString());
+        String tagName = addExpenseResponse.getBody()
+                .getExpenses()
+                .get(0)
+                .getTags()
+                .get(0)
+                .getName();
 
-        ResponseEntity<ExpensesList> getExpensesByCriteriaResponse = this.restTemplate.getForEntity(searchCriteriaURL,
+        String searchCriteriaURL = createURLWithPort(
+                "/expense/criteria",
+                tagName,
+                fromDate.toString(),
+                toDate.toString());
+
+        var getExpensesByCriteriaResponse = restTemplate.getForEntity(
+                searchCriteriaURL,
                 ExpensesList.class);
 
         assertEquals(HttpStatus.OK, getExpensesByCriteriaResponse.getStatusCode());

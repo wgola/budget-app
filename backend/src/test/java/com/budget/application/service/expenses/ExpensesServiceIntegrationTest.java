@@ -1,4 +1,4 @@
-package com.budget.application.service;
+package com.budget.application.service.expenses;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.budget.application.model.Expense;
 import com.budget.application.model.ExpensesSearchCriteria;
@@ -21,8 +22,8 @@ import com.budget.application.model.Tag;
 import com.budget.application.repository.ExpenseRepository;
 import com.budget.application.utils.TestUtils;
 
-@SpringBootTest
-class ExpensesServiceImplIntegrationTest {
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class ExpensesServiceIntegrationTest {
 
     @Autowired
     private ExpensesService expensesService;
@@ -36,52 +37,66 @@ class ExpensesServiceImplIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        List<Expense> generatedExpenses = TestUtils.generateGivenAmounOfTestExpenseObjects(3, 1,
+        TestUtils.generateGivenAmounOfTestExpenseObjects(
+                3,
+                1,
+                LocalDateTime.of(2018, 11, 12, 1, 0, 0))
+                .forEach(expenseRepository::save);
+
+        testExpense = TestUtils.generateTestExpense(
+                1,
                 LocalDateTime.of(2018, 11, 12, 1, 0, 0));
-        this.testExpense = TestUtils.generateTestExpense(1, LocalDateTime.of(2018, 11, 12, 1, 0, 0));
-        this.fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
-        this.toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
-        for (Expense expense : generatedExpenses) {
-            this.expensesService.createExpense(expense);
-        }
+
+        fromDate = Timestamp.valueOf("2018-11-09 01:02:03.123456789");
+        toDate = Timestamp.valueOf("2018-11-12 01:02:03.123456789");
     }
 
     @AfterEach
     void tearDown() {
-        this.expenseRepository.deleteAll();
+        expenseRepository.deleteAll();
     }
 
     @Test
     void testCreateExpense() {
-        Expense createdExpense = this.expensesService.createExpense(this.testExpense);
+        Expense createdExpense = expensesService.createExpense(testExpense);
 
-        assertEquals(this.testExpense.getExpenseID(), createdExpense.getExpenseID());
+        assertEquals(testExpense.getExpenseID(), createdExpense.getExpenseID());
     }
 
     @Test
     void testDeleteExpense() {
-        Long expenseToDeleteID = this.expensesService.getAllExpenses().get().get(0).getExpenseID();
-        this.expensesService.deleteExpense(expenseToDeleteID);
-        Optional<Expense> deletedExpense = this.expenseRepository.findById(expenseToDeleteID);
+        Long expenseToDeleteID = expensesService.getAllExpenses()
+                .get()
+                .get(0)
+                .getExpenseID();
+
+        expensesService.deleteExpense(expenseToDeleteID);
+        Optional<Expense> deletedExpense = expenseRepository.findById(expenseToDeleteID);
 
         assertTrue(deletedExpense.isEmpty());
     }
 
     @Test
     void testGetAllExpenses() {
-        List<Expense> allExpenses = this.expensesService.getAllExpenses().get();
+        List<Expense> allExpenses = expensesService.getAllExpenses().get();
 
         assertEquals(3, allExpenses.size());
     }
 
     @Test
     void testGetExpensesByCriteriaWithTagsSettedOnly() {
-        List<String> foundTags = this.expensesService.getAllExpenses().get().get(0).getTags().stream().map(Tag::getName)
+        List<String> foundTags = expensesService.getAllExpenses()
+                .get()
+                .get(0)
+                .getTags()
+                .stream()
+                .map(Tag::getName)
                 .toList();
+
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
         expensesSearchCriteria.setTagNames(foundTags);
 
-        Optional<List<Expense>> expensesFoundByCriteria = this.expensesService
+        Optional<List<Expense>> expensesFoundByCriteria = expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
@@ -91,9 +106,9 @@ class ExpensesServiceImplIntegrationTest {
     @Test
     void testGetExpensesByCriteriaWithFromDateSettedOnly() {
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
-        expensesSearchCriteria.setFromDate(this.fromDate);
+        expensesSearchCriteria.setFromDate(fromDate);
 
-        Optional<List<Expense>> expensesFoundByCriteria = this.expensesService
+        Optional<List<Expense>> expensesFoundByCriteria = expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
@@ -103,9 +118,9 @@ class ExpensesServiceImplIntegrationTest {
     @Test
     void testGetExpensesByCriteriaWithToDateSettedOnly() {
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
-        expensesSearchCriteria.setToDate(this.toDate);
+        expensesSearchCriteria.setToDate(toDate);
 
-        Optional<List<Expense>> expensesFoundByCriteria = this.expensesService
+        Optional<List<Expense>> expensesFoundByCriteria = expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
@@ -115,10 +130,10 @@ class ExpensesServiceImplIntegrationTest {
     @Test
     void testGetExpensesByCriteriaWithBothDatesSetted() {
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
-        expensesSearchCriteria.setFromDate(this.fromDate);
-        expensesSearchCriteria.setToDate(this.toDate);
+        expensesSearchCriteria.setFromDate(fromDate);
+        expensesSearchCriteria.setToDate(toDate);
 
-        Optional<List<Expense>> expensesFoundByCriteria = this.expensesService
+        Optional<List<Expense>> expensesFoundByCriteria = expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
@@ -127,14 +142,20 @@ class ExpensesServiceImplIntegrationTest {
 
     @Test
     void testGetExpensesByCriteriaWithAllParamsSetted() {
-        List<String> foundTags = this.expensesService.getAllExpenses().get().get(0).getTags().stream().map(Tag::getName)
+        List<String> foundTags = expensesService.getAllExpenses()
+                .get()
+                .get(0)
+                .getTags()
+                .stream()
+                .map(Tag::getName)
                 .toList();
+
         ExpensesSearchCriteria expensesSearchCriteria = new ExpensesSearchCriteria();
         expensesSearchCriteria.setTagNames(foundTags);
-        expensesSearchCriteria.setFromDate(this.fromDate);
-        expensesSearchCriteria.setToDate(this.toDate);
+        expensesSearchCriteria.setFromDate(fromDate);
+        expensesSearchCriteria.setToDate(toDate);
 
-        Optional<List<Expense>> expensesFoundByCriteria = this.expensesService
+        Optional<List<Expense>> expensesFoundByCriteria = expensesService
                 .getExpensesBySearchCriteria(expensesSearchCriteria);
 
         assertTrue(expensesFoundByCriteria.isPresent());
