@@ -24,35 +24,7 @@ public class ExpensesServiceImpl implements ExpensesService {
 
     @Override
     public Optional<List<Expense>> getExpensesBySearchCriteria(ExpensesSearchCriteria criteria) {
-        List<Expense> filteredExpenses = expenseRepository.findAll();
-
-        if (criteria.getTagNames() != null)
-            filteredExpenses = filteredExpenses.stream()
-                    .filter(expense -> expense
-                            .getTags()
-                            .stream()
-                            .anyMatch(tag -> criteria
-                                    .getTagNames()
-                                    .contains(tag.getName())))
-                    .toList();
-
-        if (criteria.getFromDate() != null)
-            filteredExpenses = filteredExpenses.stream()
-                    .filter(expense -> expense
-                            .getCreationDate()
-                            .isAfter(criteria
-                                    .getFromDate()
-                                    .toLocalDateTime()))
-                    .toList();
-
-        if (criteria.getToDate() != null)
-            filteredExpenses = filteredExpenses.stream()
-                    .filter(expense -> expense
-                            .getCreationDate()
-                            .isBefore(criteria
-                                    .getToDate()
-                                    .toLocalDateTime()))
-                    .toList();
+        List<Expense> filteredExpenses = expenseRepository.findAll(criteria.getSpecification());
 
         return Optional.of(filteredExpenses);
     }
